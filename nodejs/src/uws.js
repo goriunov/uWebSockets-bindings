@@ -38,7 +38,8 @@ const native = (() => {
             throw new Error('µWebSockets requires Node.js 6.4.0 or greater on Windows.');
         } else {
             throw new Error('Compilation of µWebSockets has failed and there is no pre-compiled binary ' +
-            'available for your system. Please install a supported C++11 compiler and reinstall the module \'uws\'.');
+            'available for your system. Please install a supported C++11 compiler and reinstall '+
+            'the module \'uws\'.\nError:\n'+e.message);
         }
     }
 })();
@@ -505,7 +506,7 @@ class Server extends EventEmitter {
         } else {
             const secKey = request.headers['sec-websocket-key'];
             const socketHandle = socket.ssl ? socket._parent._handle : socket._handle;
-            const sslState = socket.ssl ? socket.ssl._external : null;
+            const sslState = socket.ssl ? native.getSSLContext(socket.ssl) : null;
             if (socketHandle && secKey && secKey.length == 24) {
                 socket.setNoDelay(this._noDelay);
                 const ticket = native.transfer(socketHandle.fd === -1 ? socketHandle : socketHandle.fd, sslState);
